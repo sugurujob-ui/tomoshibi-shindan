@@ -298,12 +298,6 @@
   <p class="subtitle">〜 あなたの心に灯る、その火を見つめて 〜</p>
   <div class="divider"></div>
 
-  <!-- ▼▼▼ デバッグ用(原因特定後に削除してください) ▼▼▼ -->
-  <div id="debug-box" style="background:#fff3cd; border:1px solid #d8c8a3; padding:12px; margin-bottom:16px; font-size:12px; white-space:pre-wrap; word-break:break-all;">
-    デバッグ情報を読み込み中...
-  </div>
-  <!-- ▲▲▲ ここまで ▲▲▲ -->
-
   <!-- スタート画面 -->
   <div class="screen active" id="screen-start">
     <svg class="flame-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -362,24 +356,14 @@
 /* =========================================================
    【設定】ご自身の値に書き換えてください
    ========================================================= */
-const LIFF_ID = "2010446397-sGzoqaqi";           // 例: "1234567890-AbCdEfGh"
-const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwsgEy8JFCN2FU2sgJsCvkPyM2zoO1o_YySv3_lJL90nxuJgsneTMdlaLUeH_V-Hg/exec"; // 例: "https://script.google.com/macros/s/xxxx/exec"
+const LIFF_ID = "2010446397-sGzoqaqi";
+const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwsgEy8JFCN2FU2sgJsCvkPyM2zoO1o_YySv3_lJL90nxuJgsneTMdlaLUeH_V-Hg/exec";
 
 let userProfile = null; // { userId, displayName }
 
 /* LIFF初期化:アプリ起動時に一度だけ実行 */
-function showDebug(text) {
-  const box = document.getElementById("debug-box");
-  if (box) box.textContent += "\n" + text;
-}
-
-showDebug("LIFF_ID: " + LIFF_ID);
-showDebug("liff.init 開始...");
-
 liff.init({ liffId: LIFF_ID })
   .then(() => {
-    showDebug("LIFF初期化成功 / ログイン状態: " + liff.isLoggedIn());
-
     if (liff.isLoggedIn()) {
       return liff.getProfile();
     }
@@ -388,12 +372,6 @@ liff.init({ liffId: LIFF_ID })
   })
   .then((profile) => {
     if (profile) {
-      showDebug("プロフィール取得成功\nuserId: " + profile.userId + "\n表示名: " + profile.displayName);
-    } else {
-      showDebug("プロフィールはnullでした(ログインしていない状態)");
-    }
-
-    if (profile) {
       userProfile = {
         userId: profile.userId,
         displayName: profile.displayName
@@ -401,7 +379,6 @@ liff.init({ liffId: LIFF_ID })
     }
   })
   .catch((err) => {
-    showDebug("LIFF初期化エラー: " + err.message);
     console.error("LIFF初期化エラー:", err);
     // プロフィール取得に失敗しても、診断自体は続行できるようにする
   });
