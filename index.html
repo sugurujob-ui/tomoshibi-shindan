@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灯火タイプ診断 〜あなたの心に灯る火〜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Noto+Serif+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  :root{
+    --parchment: #f4ecda;
+    --parchment-deep: #ebe0c6;
+    --ink: #3a3128;
+    --ink-soft: #6b5d4d;
+    --gold: #b8893f;
+    --gold-deep: #8c651f;
+    --ember: #a8472c;
+    --line: #d8c8a3;
+    --white-card: #fffaf0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: "Noto Serif JP", serif;
+    min-height:100vh;
+  }
+  body{
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(184,137,63,0.08), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(168,71,44,0.06), transparent 45%);
+  }
+  .app{
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 32px 20px 60px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ---------- ヘッダー ---------- */
+  .eyebrow{
+    text-align:center;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    color: var(--gold-deep);
+    margin-bottom: 8px;
+  }
+  h1.title{
+    font-family: "Shippori Mincho", serif;
+    text-align:center;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+  }
+  .subtitle{
+    text-align:center;
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+    letter-spacing: 0.04em;
+  }
+  .divider{
+    width: 56px;
+    height: 1px;
+    background: var(--gold);
+    margin: 0 auto 28px;
+    position: relative;
+  }
+  .divider::after{
+    content:"";
+    position:absolute;
+    width:5px; height:5px;
+    border-radius:50%;
+    background: var(--gold);
+    left:50%; top:50%;
+    transform: translate(-50%,-50%);
+  }
+
+  /* ---------- スタート画面 ---------- */
+  .screen{ display:none; flex-direction:column; flex:1; animation: fadeIn .5s ease; }
+  .screen.active{ display:flex; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .flame-icon{
+    width: 64px; height: 64px;
+    margin: 0 auto 24px;
+    display:block;
+  }
+
+  .lead-text{
+    font-size: 18px;
+    line-height: 2.1;
+    color: var(--ink-soft);
+    text-align:center;
+    margin-bottom: 20px;
+    padding: 0 8px;
+  }
+
+  .btn{
+    display:block;
+    width: 100%;
+    text-align:center;
+    background: var(--ink);
+    color: var(--parchment);
+    border: none;
+    padding: 16px 24px;
+    font-family: "Shippori Mincho", serif;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background .25s ease, transform .15s ease;
+  }
+  .btn:hover{ background: var(--gold-deep); }
+  .btn:active{ transform: scale(0.98); }
+  .btn.start{ margin-top: 12px; }
+
+  .meta-row{
+    display:flex;
+    justify-content:center;
+    gap: 24px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 18px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ---------- 質問画面 ---------- */
+  .progress-wrap{
+    margin-bottom: 28px;
+  }
+  .progress-label{
+    display:flex;
+    justify-content:space-between;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    letter-spacing: 0.1em;
+  }
+  .progress-track{
+    width:100%;
+    height: 2px;
+    background: var(--line);
+    position: relative;
+  }
+  .progress-fill{
+    height:100%;
+    background: var(--gold);
+    transition: width .4s ease;
+  }
+
+  .question-text{
+    font-family: "Shippori Mincho", serif;
+    font-size: 24px;
+    line-height: 1.8;
+    margin-bottom: 28px;
+    font-weight: 600;
+  }
+
+  .choices{
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+  }
+  .choice{
+    background: var(--white-card);
+    border: 1px solid var(--line);
+    padding: 18px 20px;
+    font-size: 18px;
+    line-height: 1.8;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: border-color .2s ease, background .2s ease, transform .15s ease;
+    position: relative;
+  }
+  .choice:hover{
+    border-color: var(--gold);
+    background: #fffdf5;
+  }
+  .choice:active{ transform: scale(0.99); }
+  .choice::before{
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: transparent;
+    transition: background .2s ease;
+  }
+  .choice:hover::before{ background: var(--gold); }
+
+  /* ---------- 結果画面 ---------- */
+  .result-eyebrow{
+    text-align:center;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--gold-deep);
+    margin-bottom: 12px;
+  }
+  .result-name{
+    font-family: "Shippori Mincho", serif;
+    text-align:center;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 4px;
+  }
+  .result-kana{
+    text-align:center;
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 0.15em;
+    margin-bottom: 24px;
+  }
+  .result-card{
+    background: var(--white-card);
+    border: 1px solid var(--line);
+    padding: 28px 22px;
+    margin-bottom: 24px;
+    border-radius: 2px;
+    position: relative;
+  }
+  .result-card::before{
+    content:"";
+    position:absolute;
+    top:-1px; left: 20px; right: 20px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .result-desc{
+    font-size: 18px;
+    line-height: 2.1;
+    color: var(--ink);
+    margin-bottom: 18px;
+  }
+  .result-points{
+    list-style:none;
+    border-top: 1px dashed var(--line);
+    padding-top: 16px;
+  }
+  .result-points li{
+    font-size: 17px;
+    line-height: 2;
+    color: var(--ink-soft);
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+  .result-points li::before{
+    content: "・";
+    position:absolute;
+    left:0;
+    color: var(--gold-deep);
+  }
+
+  .share-note{
+    text-align:center;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 2;
+    margin-bottom: 24px;
+    padding: 14px;
+    background: rgba(184,137,63,0.07);
+    border-radius: 2px;
+  }
+
+  .retry-btn{
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+  }
+  .retry-btn:hover{
+    background: var(--white-card);
+    border-color: var(--gold);
+    color: var(--ink);
+  }
+
+  footer.app-footer{
+    text-align:center;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--ink-soft);
+    margin-top: 32px;
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="eyebrow">PERSONALITY DIAGNOSIS</div>
+  <h1 class="title">灯火（ともしび）タイプ診断</h1>
+  <p class="subtitle">〜 あなたの心に灯る、その火を見つめて 〜</p>
+  <div class="divider"></div>
+
+  <!-- ▼▼▼ デバッグ用(原因特定後に削除してください) ▼▼▼ -->
+  <div id="debug-box" style="background:#fff3cd; border:1px solid #d8c8a3; padding:12px; margin-bottom:16px; font-size:12px; white-space:pre-wrap; word-break:break-all;">
+    デバッグ情報を読み込み中...
+  </div>
+  <!-- ▲▲▲ ここまで ▲▲▲ -->
+
+  <!-- スタート画面 -->
+  <div class="screen active" id="screen-start">
+    <svg class="flame-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M32 4C32 4 18 20 18 34C18 44.5 24 52 32 52C40 52 46 44.5 46 34C46 26 38 18 38 18C39 24 35 28 32 28C28 28 27 23 28 18C28 18 32 4 32 4Z" fill="#b8893f" opacity="0.85"/>
+      <path d="M32 24C32 24 26 33 26 40C26 45.5 28.5 50 32 50C35.5 50 38 45.5 38 40C38 35 34 31 34 31C34.5 34 32.5 36 31 36C29.5 36 29 33 29.5 31C29.5 31 32 24 32 24Z" fill="#a8472c"/>
+    </svg>
+    <p class="lead-text">
+      5つの質問に、直感でお答えください。<br>
+      所要時間は約1分。<br>
+      あなたの中に静かに灯る「火」のかたちを、<br>
+      一緒にのぞいてみましょう。
+    </p>
+    <button class="btn start" onclick="startQuiz()">診断をはじめる</button>
+    <div class="meta-row">
+      <span>全5問</span>
+      <span>所要時間 約1分</span>
+    </div>
+  </div>
+
+  <!-- 質問画面 -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progress-current">質問 1 / 5</span>
+        <span id="progress-percent">20%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:20%;"></div>
+      </div>
+    </div>
+    <div class="question-text" id="question-text"></div>
+    <div class="choices" id="choices-wrap"></div>
+  </div>
+
+  <!-- 結果画面 -->
+  <div class="screen" id="screen-result">
+    <div class="result-eyebrow">あなたのタイプは</div>
+    <div class="result-name" id="result-name"></div>
+    <div class="result-kana" id="result-kana"></div>
+    <div class="result-card">
+      <p class="result-desc" id="result-desc"></p>
+      <ul class="result-points" id="result-points"></ul>
+    </div>
+    <div class="share-note">
+      この診断結果は、あなたの「今」を映す一つの灯です。<br>
+      日によって、揺れたり強まったりするのも自然なこと。
+    </div>
+    <button class="btn retry-btn" onclick="restartQuiz()">もう一度診断する</button>
+  </div>
+
+  <footer class="app-footer">長岡発の現場系オヤジ Brandon</footer>
+
+</div>
+
+<script>
+/* =========================================================
+   【設定】ご自身の値に書き換えてください
+   ========================================================= */
+const LIFF_ID = "ここにLIFF IDを入力";           // 例: "1234567890-AbCdEfGh"
+const GAS_ENDPOINT = "ここにGASのWebアプリURLを入力"; // 例: "https://script.google.com/macros/s/xxxx/exec"
+
+let userProfile = null; // { userId, displayName }
+
+/* LIFF初期化:アプリ起動時に一度だけ実行 */
+function showDebug(text) {
+  const box = document.getElementById("debug-box");
+  if (box) box.textContent += "\n" + text;
+}
+
+showDebug("LIFF_ID: " + LIFF_ID);
+showDebug("liff.init 開始...");
+
+liff.init({ liffId: LIFF_ID })
+  .then(() => {
+    showDebug("LIFF初期化成功 / ログイン状態: " + liff.isLoggedIn());
+
+    if (liff.isLoggedIn()) {
+      return liff.getProfile();
+    }
+    // 通常、リッチメニュー経由なら自動的にログイン状態になっています
+    return null;
+  })
+  .then((profile) => {
+    if (profile) {
+      showDebug("プロフィール取得成功\nuserId: " + profile.userId + "\n表示名: " + profile.displayName);
+    } else {
+      showDebug("プロフィールはnullでした(ログインしていない状態)");
+    }
+
+    if (profile) {
+      userProfile = {
+        userId: profile.userId,
+        displayName: profile.displayName
+      };
+    }
+  })
+  .catch((err) => {
+    showDebug("LIFF初期化エラー: " + err.message);
+    console.error("LIFF初期化エラー:", err);
+    // プロフィール取得に失敗しても、診断自体は続行できるようにする
+  });
+</script>
+
+<script>
+/* =========================================================
+   質問データ：各選択肢が a / b / c / d のスコアを持つ
+   a: 陽だまり型  b: 灯火型  c: 篝火型  d: 月あかり型
+   ========================================================= */
+const QUESTIONS = [
+  {
+    text: "Q1. 休日、何もない一日が急にできました。あなたはどう過ごす？",
+    choices: [
+      { label: "気の置けない友人や家族と、おしゃべりしながら過ごす", score: "a" },
+      { label: "誰にも邪魔されず、自分の好きなことにじっくり没頭する", score: "b" },
+      { label: "前から気になっていた場所へ、思い立って出かけてみる", score: "c" },
+      { label: "静かな場所で本を読んだり、物事をじっくり考えたりする", score: "d" }
+    ]
+  },
+  {
+    text: "Q2. 誰かが悩みを相談してきました。あなたが一番大事にすることは？",
+    choices: [
+      { label: "まずは温かく寄り添い、安心してもらうこと", score: "a" },
+      { label: "焦らせず、本人が自分で答えを見つける時間を見守ること", score: "b" },
+      { label: "一緒に行動して、現状を変える後押しをすること", score: "c" },
+      { label: "状況を整理し、筋道を立てて冷静にアドバイスすること", score: "d" }
+    ]
+  },
+  {
+    text: "Q3. 新しいことに挑戦するとき、あなたの原動力は？",
+    choices: [
+      { label: "誰かの役に立ちたい、喜んでもらいたいという気持ち", score: "a" },
+      { label: "自分自身を高めたい、納得したいという気持ち", score: "b" },
+      { label: "「面白そう」というワクワクする気持ち", score: "c" },
+      { label: "ちゃんと理解してから動きたいという気持ち", score: "d" }
+    ]
+  },
+  {
+    text: "Q4. まわりの人から、よく言われることは？",
+    choices: [
+      { label: "「一緒にいると、ほっとする」", score: "a" },
+      { label: "「自分の芯をちゃんと持っているね」", score: "b" },
+      { label: "「パワーをもらえる、元気になる」", score: "c" },
+      { label: "「話を聞くと、頭の中が整理される」", score: "d" }
+    ]
+  },
+  {
+    text: "Q5. 落ち込んだとき、あなたが本当に求めているものは？",
+    choices: [
+      { label: "誰かがそばにいてくれる、という安心感", score: "a" },
+      { label: "ひとりで静かに気持ちを整理する時間", score: "b" },
+      { label: "気分を切り替えられる、新しい刺激", score: "c" },
+      { label: "なぜそう感じたのか、理由を理解すること", score: "d" }
+    ]
+  }
+];
+
+/* =========================================================
+   結果データ
+   ========================================================= */
+const RESULTS = {
+  a: {
+    name: "陽だまり型",
+    kana: "HIDAMARI TYPE",
+    desc: "あなたは、そこにいるだけで周りの空気を柔らかくする「陽だまり」のような人。誰かの緊張をほどき、安心できる居場所をつくる力に長けています。自分のことよりも、つい周りを優先してしまう優しさが、あなたの一番の魅力です。",
+    points: [
+      "聞き上手で、人から自然と頼られる",
+      "場の空気を読み、調和を大切にする",
+      "頑張りすぎて、自分を後回しにしがち",
+      "「自分を労わる時間」を意識すると、より輝けます"
+    ]
+  },
+  b: {
+    name: "灯火型",
+    kana: "TOMOSHIBI TYPE",
+    desc: "あなたは、外の声に左右されず、自分の内側にある火を静かに守り続ける人。派手さはなくとも、その一貫した姿勢が、まわりに確かな信頼を生みます。焦らず自分のペースを保てることが、何よりの強さです。",
+    points: [
+      "自分の価値観に正直で、ブレが少ない",
+      "ひとりの時間で力を蓄えるタイプ",
+      "周囲に流されにくく、芯がある",
+      "たまには助けを求めることも、灯を強くする一歩です"
+    ]
+  },
+  c: {
+    name: "篝火型",
+    kana: "KAGARIBI TYPE",
+    desc: "あなたは、人を惹きつけ、場を明るく照らす「篝火」のような存在。行動力と情熱で周囲を巻き込み、停滞していた空気を動かす力を持っています。あなたが動くと、まわりも自然と前を向き始めます。",
+    points: [
+      "決断が早く、行動力に優れている",
+      "人を巻き込み、場を盛り上げるのが得意",
+      "情熱的だが、燃え尽きには要注意",
+      "時には立ち止まり、火を休ませる時間も大切に"
+    ]
+  },
+  d: {
+    name: "月あかり型",
+    kana: "TSUKIAKARI TYPE",
+    desc: "あなたは、感情に流されず、静かな知性で物事を照らす「月あかり」のような人。物事を俯瞰し、筋道を立てて考える力があり、混乱した状況でも冷静な判断を下せます。その落ち着きが、周囲にとって大きな安心になっています。",
+    points: [
+      "物事を客観的に捉え、冷静に分析できる",
+      "感情よりも理屈で納得したいタイプ",
+      "周りから「頼れる相談役」と見られやすい",
+      "たまには理屈抜きで心を動かしてみるのもおすすめです"
+    ]
+  }
+};
+
+let currentQuestion = 0;
+let scores = { a: 0, b: 0, c: 0, d: 0 };
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function startQuiz(){
+  currentQuestion = 0;
+  scores = { a: 0, b: 0, c: 0, d: 0 };
+  showScreen("screen-quiz");
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[currentQuestion];
+  document.getElementById("question-text").textContent = q.text;
+
+  const total = QUESTIONS.length;
+  const current = currentQuestion + 1;
+  document.getElementById("progress-current").textContent = `質問 ${current} / ${total}`;
+  const percent = Math.round((current / total) * 100);
+  document.getElementById("progress-percent").textContent = `${percent}%`;
+  document.getElementById("progress-fill").style.width = `${percent}%`;
+
+  const wrap = document.getElementById("choices-wrap");
+  wrap.innerHTML = "";
+  q.choices.forEach(choice => {
+    const div = document.createElement("div");
+    div.className = "choice";
+    div.textContent = choice.label;
+    div.onclick = () => selectAnswer(choice.score);
+    wrap.appendChild(div);
+  });
+}
+
+function selectAnswer(scoreKey){
+  scores[scoreKey] += 1;
+  currentQuestion += 1;
+  if (currentQuestion < QUESTIONS.length){
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult(){
+  // 最高得点のタイプを採用。同点の場合は a > b > c > d の優先順で決定
+  const order = ["a", "b", "c", "d"];
+  let topKey = "a";
+  let topScore = -1;
+  order.forEach(key => {
+    if (scores[key] > topScore){
+      topScore = scores[key];
+      topKey = key;
+    }
+  });
+
+  const result = RESULTS[topKey];
+  document.getElementById("result-name").textContent = result.name;
+  document.getElementById("result-kana").textContent = result.kana;
+  document.getElementById("result-desc").textContent = result.desc;
+
+  const pointsWrap = document.getElementById("result-points");
+  pointsWrap.innerHTML = "";
+  result.points.forEach(p => {
+    const li = document.createElement("li");
+    li.textContent = p;
+    pointsWrap.appendChild(li);
+  });
+
+  showScreen("screen-result");
+
+  // 診断結果をGoogle Apps Scriptへ送信(ユーザー特定・記録・即時フォローアップ用)
+  sendResultToGAS(topKey, result.name);
+}
+
+function restartQuiz(){
+  showScreen("screen-start");
+}
+
+/* =========================================================
+   LIFF / GAS 連携:診断結果の送信
+   ========================================================= */
+function sendResultToGAS(typeKey, typeName) {
+  // GASのURLが未設定の場合は何もしない(設定忘れ防止)
+  if (!GAS_ENDPOINT || GAS_ENDPOINT.indexOf("ここに") === 0) {
+    console.warn("GAS_ENDPOINTが未設定です。結果は送信されません。");
+    return;
+  }
+
+  const payload = {
+    userId: userProfile ? userProfile.userId : null,
+    displayName: userProfile ? userProfile.displayName : "不明",
+    typeKey: typeKey,
+    typeName: typeName,
+    timestamp: new Date().toISOString()
+  };
+
+  fetch(GAS_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain" }, // GAS doPost対策(CORSプリフライト回避のためtext/plainで送る)
+    body: JSON.stringify(payload)
+  }).catch((err) => {
+    console.error("結果の送信に失敗しました:", err);
+    // 送信に失敗しても、ユーザーには結果画面を見せ続ける(体験を止めない)
+  });
+}
+</script>
+
+</body>
+</html>
