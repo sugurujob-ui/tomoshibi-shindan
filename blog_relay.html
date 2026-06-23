@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>還暦越えオヤジBrandon</title>
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  body {
+    background: #f4ecda;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: "Noto Serif JP", serif;
+    color: #3a3128;
+  }
+  .flame {
+    font-size: 48px;
+    margin-bottom: 16px;
+    animation: flicker 1s infinite alternate;
+  }
+  @keyframes flicker {
+    from { opacity: 1; transform: scale(1); }
+    to   { opacity: 0.7; transform: scale(0.97); }
+  }
+  .message {
+    font-size: 14px;
+    color: #6b5d4d;
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+  <div class="flame">🔥</div>
+  <div class="message">ブログへ移動しています...</div>
+
+<script>
+const LIFF_ID      = "2010446397-sGzoqaqi";
+const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwsgEy8JFCN2FU2sgJsCvkPyM2zoO1o_YySv3_lJL90nxuJgsneTMdlaLUeH_V-Hg/exec";
+const BLOG_URL     = "https://ameblo.jp/hanabusa2013/";
+
+liff.init({ liffId: LIFF_ID })
+  .then(() => {
+    if (liff.isLoggedIn()) {
+      return liff.getProfile();
+    }
+    return null;
+  })
+  .then((profile) => {
+    // ユーザー情報をGASに送信(失敗してもリダイレクトは続行)
+    if (profile) {
+      fetch(GAS_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+          action: "blog_visit",         // 診断ログと区別するためのフラグ
+          userId: profile.userId,
+          displayName: profile.displayName,
+          timestamp: new Date().toISOString()
+        })
+      }).catch(() => {}); // 送信失敗しても無視してリダイレクト
+    }
+    // ブログへリダイレクト(少し待って、ローディング感を出す)
+    setTimeout(() => {
+      window.location.href = BLOG_URL;
+    }, 800);
+  })
+  .catch(() => {
+    // LIFF初期化失敗でも、ブログへリダイレクトは続行
+    setTimeout(() => {
+      window.location.href = BLOG_URL;
+    }, 800);
+  });
+</script>
+
+</body>
+</html>
