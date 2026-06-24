@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>還暦越えオヤジBrandon</title>
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  body {
+    background: #f4ecda;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: "Noto Serif JP", serif;
+    color: #3a3128;
+  }
+  .flame { font-size: 48px; margin-bottom: 16px; animation: flicker 1s infinite alternate; }
+  @keyframes flicker { from{opacity:1;transform:scale(1);} to{opacity:0.7;transform:scale(0.97);} }
+  .message { font-size: 14px; color: #6b5d4d; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+  <div class="flame">🔥</div>
+  <div class="message">PDFを準備しています...</div>
+<script>
+const LIFF_ID      = "ここに新しいLIFF IDを入力";
+const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwsgEy8JFCN2FU2sgJsCvkPyM2zoO1o_YySv3_lJL90nxuJgsneTMdlaLUeH_V-Hg/exec";
+const TARGET_URL   = "https://drive.google.com/uc?export=download&id=1D2WPteyTS6YUU6ABjnDOH-H_QFPlXyGs";
+const ACTION_NAME  = "pdf_download"; // スプレッドシートの記録用ラベル
+
+liff.init({ liffId: LIFF_ID })
+  .then(() => liff.isLoggedIn() ? liff.getProfile() : null)
+  .then((profile) => {
+    if (profile) {
+      fetch(GAS_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+          action: ACTION_NAME,
+          userId: profile.userId,
+          displayName: profile.displayName,
+          timestamp: new Date().toISOString()
+        })
+      }).catch(() => {});
+    }
+    setTimeout(() => { window.location.href = TARGET_URL; }, 800);
+  })
+  .catch(() => { setTimeout(() => { window.location.href = TARGET_URL; }, 800); });
+</script>
+</body>
+</html>
