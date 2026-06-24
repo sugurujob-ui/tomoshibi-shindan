@@ -50,6 +50,8 @@ liff.init({ liffId: LIFF_ID })
       // LINEアプリ内ブラウザを閉じて、外部ブラウザ(Safari/Chrome)でPDFを開く
       if (liff.isInClient()) {
         liff.openWindow({ url: TARGET_URL, external: true });
+        // 外部ブラウザが開いたら、LIFF画面を閉じる
+        setTimeout(() => { liff.closeWindow(); }, 1000);
       } else {
         window.location.href = TARGET_URL;
       }
@@ -59,6 +61,7 @@ liff.init({ liffId: LIFF_ID })
     setTimeout(() => {
       if (liff.isInClient()) {
         liff.openWindow({ url: TARGET_URL, external: true });
+        setTimeout(() => { liff.closeWindow(); }, 1000);
       } else {
         window.location.href = TARGET_URL;
       }
