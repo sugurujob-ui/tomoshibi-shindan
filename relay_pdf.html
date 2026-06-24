@@ -28,8 +28,8 @@
 <script>
 const LIFF_ID      = "2010446397-ZeHAgZVW";
 const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwsgEy8JFCN2FU2sgJsCvkPyM2zoO1o_YySv3_lJL90nxuJgsneTMdlaLUeH_V-Hg/exec";
-const TARGET_URL = "https://sugurujob-ui.github.io/tomoshibi-shindan/AI_Side_Hustle_Blueprint.pdf";
-const ACTION_NAME  = "pdf_download"; // スプレッドシートの記録用ラベル
+const TARGET_URL   = "https://sugurujob-ui.github.io/tomoshibi-shindan/AI_Side_Hustle_Blueprint.pdf";
+const ACTION_NAME  = "pdf_download";
 
 liff.init({ liffId: LIFF_ID })
   .then(() => liff.isLoggedIn() ? liff.getProfile() : null)
@@ -46,9 +46,24 @@ liff.init({ liffId: LIFF_ID })
         })
       }).catch(() => {});
     }
-    setTimeout(() => { window.location.href = TARGET_URL; }, 800);
+    setTimeout(() => {
+      // LINEアプリ内ブラウザを閉じて、外部ブラウザ(Safari/Chrome)でPDFを開く
+      if (liff.isInClient()) {
+        liff.openWindow({ url: TARGET_URL, external: true });
+      } else {
+        window.location.href = TARGET_URL;
+      }
+    }, 800);
   })
-  .catch(() => { setTimeout(() => { window.location.href = TARGET_URL; }, 800); });
+  .catch(() => {
+    setTimeout(() => {
+      if (liff.isInClient()) {
+        liff.openWindow({ url: TARGET_URL, external: true });
+      } else {
+        window.location.href = TARGET_URL;
+      }
+    }, 800);
+  });
 </script>
 </body>
 </html>
