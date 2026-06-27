@@ -17,26 +17,14 @@
     font-family: "Noto Serif JP", serif;
     color: #3a3128;
   }
-  .flame {
-    font-size: 48px;
-    margin-bottom: 16px;
-    animation: flicker 1s infinite alternate;
-  }
-  @keyframes flicker {
-    from { opacity: 1; transform: scale(1); }
-    to   { opacity: 0.7; transform: scale(0.97); }
-  }
-  .message {
-    font-size: 14px;
-    color: #6b5d4d;
-    letter-spacing: 0.1em;
-  }
+  .flame { font-size: 48px; margin-bottom: 16px; animation: flicker 1s infinite alternate; }
+  @keyframes flicker { from{opacity:1;transform:scale(1);} to{opacity:0.7;transform:scale(0.97);} }
+  .message { font-size: 14px; color: #6b5d4d; letter-spacing: 0.1em; }
 </style>
 </head>
 <body>
   <div class="flame">🔥</div>
   <div class="message">ブログへ移動しています...</div>
-
 <script>
 const LIFF_ID      = "2010446397-OdB7AWDq";
 const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbw7uVzzyFbecIn9rTY5wMoGSnJYonxNUd13aSngE7KhDZ2RYIOd1o1Bsx4PpuQee-M/exec";
@@ -50,31 +38,27 @@ liff.init({ liffId: LIFF_ID })
     return null;
   })
   .then((profile) => {
-    // ユーザー情報をGASに送信(失敗してもリダイレクトは続行)
     if (profile) {
       fetch(GAS_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({
-          action: "blog_visit",         // 診断ログと区別するためのフラグ
+          action: "blog_visit",
           userId: profile.userId,
           displayName: profile.displayName,
           timestamp: new Date().toISOString()
         })
-      }).catch(() => {}); // 送信失敗しても無視してリダイレクト
+      }).catch(() => {});
     }
-    // ブログへリダイレクト(少し待って、ローディング感を出す)
     setTimeout(() => {
       window.location.href = BLOG_URL;
     }, 800);
   })
   .catch(() => {
-    // LIFF初期化失敗でも、ブログへリダイレクトは続行
     setTimeout(() => {
       window.location.href = BLOG_URL;
     }, 800);
   });
 </script>
-
 </body>
 </html>
