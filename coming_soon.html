@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>準備中</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Hiragino Sans", "Meiryo", sans-serif;
+    background: #3a3128;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f4ecda;
+  }
+  .container {
+    text-align: center;
+    padding: 40px 30px;
+  }
+  .flame {
+    font-size: 64px;
+    margin-bottom: 24px;
+    animation: flicker 2s infinite alternate;
+  }
+  @keyframes flicker {
+    0%   { opacity: 1;   transform: scale(1);    }
+    50%  { opacity: 0.8; transform: scale(1.05); }
+    100% { opacity: 1;   transform: scale(0.98); }
+  }
+  .coming-soon {
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: #b8893f;
+    font-weight: bold;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #f4ecda;
+  }
+  .message {
+    font-size: 15px;
+    color: #c8b89a;
+    line-height: 1.8;
+    margin-bottom: 32px;
+  }
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: #b8893f;
+    margin: 0 auto 32px;
+  }
+  .close-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background: #b8893f;
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+  .close-btn:active {
+    opacity: 0.8;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="flame">🔥</div>
+  <div class="coming-soon">COMING SOON</div>
+  <div class="title">準備中です</div>
+  <div class="divider"></div>
+  <div class="message">
+    ただいま新しいコンテンツを<br>
+    準備しています。<br><br>
+    もうしばらくお待ちください。
+  </div>
+  <button class="close-btn" onclick="window.close()">閉じる</button>
+</div>
+</body>
+</html>
